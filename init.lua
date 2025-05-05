@@ -106,7 +106,11 @@ vim.opt.number = true
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
-
+-- Tabbing size correction
+vim.o.expandtab = true
+vim.o.tabstop = 4
+vim.o.softtabstop = 4
+vim.o.shiftwidth = 4
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
 
@@ -212,6 +216,58 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   callback = function()
     vim.highlight.on_yank()
   end,
+})
+
+-- templated header file insertion for c/c++
+vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
+  pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
+  callback = function()
+    local template = vim.fn.readfile(vim.fn.expand '~/AppData/Local/nvim/templates/c_header.txt')
+    local parent_folder = vim.fn.fnamemodify(vim.fn.expand("%:p:h"), ":t")
+    local filename = vim.fn.expand '%:t'
+    local date = os.date '%Y-%m-%d'
+    local version = "1.0.0"
+    local guard = string.upper(filename:gsub('%.', '_') .. '_H') --will be used if need to use #ifndef
+    for i, line in ipairs(template) do
+      template[i] = line:gsub('${PARENT_FOLDER}', parent_folder)
+      :gsub('${FILENAME}', filename)
+      :gsub("${VERSION}", version)
+      :gsub('${DATE}', date)
+      :gsub('${GUARD}', guard)
+    end
+    vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
+  end,
+})
+
+-- Autocommand to increment version on save
+vim.api.nvim_create_autocmd({"BufWritePre"}, {
+    pattern = {"*.cpp", "*.h"},
+    callback = function()
+        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+        local version_line_idx = nil
+        local current_version = nil
+
+        -- Find the version line
+        for i, line in ipairs(lines) do
+            if line:match("^ * Version: ") then
+                version_line_idx = i
+                current_version = line:match("^ * Version: (%d+%.%d+%.%d+)$")
+                break
+            end
+        end
+
+        -- If a version line exists, increment the version
+        if version_line_idx and current_version then
+            local major, minor, patch = current_version:match("(%d+)%.(%d+)%.(%d+)")
+            major, minor, patch = tonumber(major), tonumber(minor), tonumber(patch)
+
+            patch = patch + 1
+            local new_version = string.format("%d.%d.%d", major, minor, patch)
+
+            lines[version_line_idx] = " * Version: " .. new_version
+            vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+        end
+    end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]

@@ -1,0 +1,11 @@
+#pragma once
+/*
+ * File: ${PARENT_FOLDER}/${FILENAME}
+ * Version: ${VERSION}
+ ******************************
+ * Author: Ben Wettstein
+ * Date: ${DATE}
+ ******************************
+ * Description:
+
+ ******************************/
