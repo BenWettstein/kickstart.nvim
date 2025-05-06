@@ -778,9 +778,7 @@ require('lazy').setup({
       local ensure_installed = vim.tbl_keys(servers or {})
       vim.list_extend(ensure_installed, {
         --python plugins
-        'python-lsp-server'
-        'pyright',
-        'pylint',
+        'python-lsp-server',
         'black',
         --lua plugins
         'stylua', -- Used to format Lua code
