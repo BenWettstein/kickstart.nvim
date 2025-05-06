@@ -218,30 +218,44 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
+
+local function get_header_template(template_name)
+  local template = vim.fn.readfile(vim.fn.expand '~/AppData/Local/nvim/templates/'..tostring(template_name))
+  local parent_folder = vim.fn.fnamemodify(vim.fn.expand("%:p:h"), ":t")
+  local filename = vim.fn.expand '%:t'
+  local date = os.date '%Y-%m-%d'
+  local version = "1.0.0"
+  local guard = string.upper(filename:gsub('%.', '_') .. '_H') --will be used if need to use #ifndef
+  for i, line in ipairs(template) do
+    template[i] = line:gsub('${PARENT_FOLDER}', parent_folder)
+    :gsub('${FILENAME}', filename)
+    :gsub("${VERSION}", version)
+    :gsub('${DATE}', date)
+    :gsub('${GUARD}', guard)
+  end
+  return template
+end
+
 -- templated header file insertion for c/c++
 vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
   pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
   callback = function()
-    local template = vim.fn.readfile(vim.fn.expand '~/AppData/Local/nvim/templates/c_header.txt')
-    local parent_folder = vim.fn.fnamemodify(vim.fn.expand("%:p:h"), ":t")
-    local filename = vim.fn.expand '%:t'
-    local date = os.date '%Y-%m-%d'
-    local version = "1.0.0"
-    local guard = string.upper(filename:gsub('%.', '_') .. '_H') --will be used if need to use #ifndef
-    for i, line in ipairs(template) do
-      template[i] = line:gsub('${PARENT_FOLDER}', parent_folder)
-      :gsub('${FILENAME}', filename)
-      :gsub("${VERSION}", version)
-      :gsub('${DATE}', date)
-      :gsub('${GUARD}', guard)
-    end
+    template = get_header_template("c_header.txt")
     vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
   end,
 })
 
+-- templated header file insertion for python fiels
+vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
+  pattern = { '*.py' },
+  callback = function()
+    template = get_header_template("py_header.txt")
+    vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
+  end,
+})
 -- Autocommand to increment version on save
 vim.api.nvim_create_autocmd({"BufWritePre"}, {
-    pattern = {"*.cpp", "*.h"},
+    pattern = {'*.cpp', '*.hpp', '*.c', '*.h' },
     callback = function()
         local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
         local version_line_idx = nil
