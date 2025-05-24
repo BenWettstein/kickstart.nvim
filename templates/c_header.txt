@@ -1,5 +1,5 @@
 #ifndef ${GUARD}
-#defiine ${GUARD}
+#define ${GUARD}
 /*
  * File: ${PARENT_FOLDER}/${FILENAME}
  * Version: ${VERSION}
