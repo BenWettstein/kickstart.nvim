@@ -218,29 +218,34 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   end,
 })
 
-
 local function get_header_template(template_name)
-  local template = vim.fn.readfile(vim.fn.expand '~/AppData/Local/nvim/templates/'..tostring(template_name))
-  local parent_folder = vim.fn.fnamemodify(vim.fn.expand("%:p:h"), ":t")
+  local template = vim.fn.readfile(vim.fn.expand '~/AppData/Local/nvim/templates/' .. tostring(template_name))
+  local parent_folder = vim.fn.fnamemodify(vim.fn.expand '%:p:h', ':t')
   local filename = vim.fn.expand '%:t'
   local date = os.date '%Y-%m-%d'
-  local version = "1.0.0"
-  local guard = string.upper(filename:gsub('%.', '_') .. '_H') --will be used if need to use #ifndef
+  local version = '1.0.0'
+  local guard = string.upper(parent_folder .. '_' .. filename:gsub('%.', '_') .. '_') --will be used if need to use #ifndef
   for i, line in ipairs(template) do
-    template[i] = line:gsub('${PARENT_FOLDER}', parent_folder)
-    :gsub('${FILENAME}', filename)
-    :gsub("${VERSION}", version)
-    :gsub('${DATE}', date)
-    :gsub('${GUARD}', guard)
+    template[i] =
+      line:gsub('${PARENT_FOLDER}', parent_folder):gsub('${FILENAME}', filename):gsub('${VERSION}', version):gsub('${DATE}', date):gsub('${GUARD}', guard)
   end
   return template
 end
 
 -- templated header file insertion for c/c++
 vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
-  pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
+  pattern = { '*.hpp', '*.h' },
   callback = function()
-    template = get_header_template("c_header.txt")
+    local template = get_header_template 'c_header.txt'
+    vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
+  end,
+})
+
+-- templated header file insertion for c/c++
+vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
+  pattern = { '*.cpp', '*.c' },
+  callback = function()
+    local template = get_header_template 'c_file.txt'
     vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
   end,
 })
@@ -249,39 +254,39 @@ vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
 vim.api.nvim_create_autocmd({ 'BufNewFile' }, {
   pattern = { '*.py' },
   callback = function()
-    template = get_header_template("py_header.txt")
+    local template = get_header_template 'py_header.txt'
     vim.api.nvim_buf_set_lines(0, 0, 0, false, template)
   end,
 })
 -- Autocommand to increment version on save
-vim.api.nvim_create_autocmd({"BufWritePre"}, {
-    pattern = {'*.cpp', '*.hpp', '*.c', '*.h' },
-    callback = function()
-        local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
-        local version_line_idx = nil
-        local current_version = nil
+vim.api.nvim_create_autocmd({ 'BufWritePre' }, {
+  pattern = { '*.cpp', '*.hpp', '*.c', '*.h' },
+  callback = function()
+    local lines = vim.api.nvim_buf_get_lines(0, 0, -1, false)
+    local version_line_idx = nil
+    local current_version = nil
 
-        -- Find the version line
-        for i, line in ipairs(lines) do
-            if line:match("^ * Version: ") then
-                version_line_idx = i
-                current_version = line:match("^ * Version: (%d+%.%d+%.%d+)$")
-                break
-            end
-        end
+    -- Find the version line
+    for i, line in ipairs(lines) do
+      if line:match '^ * Version: ' then
+        version_line_idx = i
+        current_version = line:match '^ * Version: (%d+%.%d+%.%d+)$'
+        break
+      end
+    end
 
-        -- If a version line exists, increment the version
-        if version_line_idx and current_version then
-            local major, minor, patch = current_version:match("(%d+)%.(%d+)%.(%d+)")
-            major, minor, patch = tonumber(major), tonumber(minor), tonumber(patch)
+    -- If a version line exists, increment the version
+    if version_line_idx and current_version then
+      local major, minor, patch = current_version:match '(%d+)%.(%d+)%.(%d+)'
+      major, minor, patch = tonumber(major), tonumber(minor), tonumber(patch)
 
-            patch = patch + 1
-            local new_version = string.format("%d.%d.%d", major, minor, patch)
+      patch = patch + 1
+      local new_version = string.format('%d.%d.%d', major, minor, patch)
 
-            lines[version_line_idx] = " * Version: " .. new_version
-            vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
-        end
-    end,
+      lines[version_line_idx] = ' * Version: ' .. new_version
+      vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
+    end
+  end,
 })
 
 -- [[ Install `lazy.nvim` plugin manager ]]
@@ -785,7 +790,6 @@ require('lazy').setup({
         'lua-language-server',
         -- c/c++ plugins
         'clangd',
-        'clang-format',
         'cmakelang',
         'cmakelint',
       })
@@ -1062,6 +1066,17 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
+  -- using lazy.nvim
+  {
+    'S1M0N38/love2d.nvim',
+    event = 'VeryLazy',
+    opts = {},
+    keys = {
+      { '<leader>v', ft = 'lua', desc = 'LÖVE' },
+      { '<leader>vv', '<cmd>LoveRun<cr>', ft = 'lua', desc = 'Run LÖVE' },
+      { '<leader>vs', '<cmd>LoveStop<cr>', ft = 'lua', desc = 'Stop LÖVE' },
+    },
+  },
 }, {
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the

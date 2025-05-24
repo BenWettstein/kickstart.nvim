@@ -1,5 +1,4 @@
-#ifndef ${GUARD}
-#defiine ${GUARD}
+
 /*
  * File: ${PARENT_FOLDER}/${FILENAME}
  * Version: ${VERSION}
@@ -12,5 +11,3 @@
  ******************************/
 
 
-
- #endif //${GUARD}
