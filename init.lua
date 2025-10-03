@@ -125,6 +125,13 @@ end)
 -- Enable break indent
 vim.opt.breakindent = true
 
+-- setting line length numbers
+vim.opt.nu = true
+vim.opt.relativenumber = true
+vim.opt.wrap = true
+vim.opt.hlsearch = false
+vim.opt.incsearch = true
+
 -- Save undo history
 vim.opt.undofile = true
 
@@ -134,9 +141,10 @@ vim.opt.smartcase = true
 
 -- Keep signcolumn on by default
 vim.opt.signcolumn = 'yes'
+vim.opt.colorcolumn = '80'
 
 -- Decrease update time
-vim.opt.updatetime = 250
+vim.opt.updatetime = 50
 
 -- Decrease mapped sequence wait time
 vim.opt.timeoutlen = 300
