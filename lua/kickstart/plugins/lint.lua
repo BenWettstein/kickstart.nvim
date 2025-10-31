@@ -1,15 +1,4 @@
 return {
-  -- using lazy.nvim
-{
-  "S1M0N38/love2d.nvim",
-  event = "VeryLazy",
-  opts = { },
-  keys = {
-    { "<leader>v", ft = "lua", desc = "LÖVE" },
-    { "<leader>vv", "<cmd>LoveRun<cr>", ft = "lua", desc = "Run LÖVE" },
-    { "<leader>vs", "<cmd>LoveStop<cr>", ft = "lua", desc = "Stop LÖVE" },
-  },
-}
 
   { -- Linting
     'mfussenegger/nvim-lint',
@@ -61,7 +50,7 @@ return {
           -- Only run the linter in buffers that you can modify in order to
           -- avoid superfluous noise, notably within the handy LSP pop-ups that
           -- describe the hovered symbol using Markdown.
-          if vim.opt_local.modifiable:get() then
+          if vim.bo.modifiable then
             lint.try_lint()
           end
         end,

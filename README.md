@@ -23,7 +23,8 @@ If you are experiencing issues, please make sure you have the latest versions.
 
 External Requirements:
 - Basic utils: `git`, `make`, `unzip`, C Compiler (`gcc`)
-- [ripgrep](https://github.com/BurntSushi/ripgrep#installation)
+- [ripgrep](https://github.com/BurntSushi/ripgrep#installation),
+  [fd-find](https://github.com/sharkdp/fd#installation)
 - Clipboard tool (xclip/xsel/win32yank or other depending on the platform)
 - A [Nerd Font](https://www.nerdfonts.com/): optional, provides various icons
   - if you have it set `vim.g.have_nerd_font` in `init.lua` to true
@@ -73,7 +74,7 @@ too - it's ignored in the kickstart repo to make maintenance easier, but it's
 <details><summary> Linux and Mac </summary>
 
 ```sh
-git clone https://github.com/BenWettstein/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 ```
 
 </details>
@@ -83,13 +84,13 @@ git clone https://github.com/BenWettstein/kickstart.nvim.git "${XDG_CONFIG_HOME:
 If you're using `cmd.exe`:
 
 ```
-git clone https://github.com/BenWettstein/kickstart.nvim.git "%localappdata%\nvim"
+git clone https://github.com/nvim-lua/kickstart.nvim.git "%localappdata%\nvim"
 ```
 
 If you're using `powershell.exe`
 
 ```
-git clone https://github.com/BenWettstein/kickstart.nvim.nvim.git "${env:LOCALAPPDATA}\nvim"
+git clone https://github.com/nvim-lua/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
 ```
 
 </details>
